@@ -35,13 +35,17 @@ class Camera:
         """Function to transform depth buffer values to distances in camera space"""
         return 1.0 * far * near / (far - (far - near) * z_buffer)
 
-    def process_rgbd(self, obs, nearval, farval):
+    def process_rgbd(self, obs, nearval, farval, process_segmentation_mask=False):
         (width, height, rgbPixels, depthPixels, segmentationMaskBuffer) = obs
         rgb = np.reshape(rgbPixels, (height, width, 4))
         rgb_img = rgb[:, :, :3]
         depth_buffer = np.reshape(depthPixels, [height, width])
         depth = self.z_buffer_to_real_distance(z_buffer=depth_buffer, far=farval, near=nearval)
-        return rgb_img, depth
+        segmentation_mask = np.reshape(segmentationMaskBuffer, [height, width])
+        if process_segmentation_mask:
+            return rgb_img, depth, segmentation_mask
+        else:
+            return rgb_img, depth
 
     # Reference: world2pixel
     # https://github.com/bulletphysics/bullet3/issues/1952

@@ -1,0 +1,14 @@
+load_dir: ../../dataset/task_D_D/training
+data_path: data
+save_dir: ../../dataset/task_D_D_rerendered/training
+show_gui: false
+processes: 1
+scale_factor: 4
+
+hydra:
+  run:
+    dir: ${save_dir}
+
+defaults:
+  - override hydra/job_logging: colorlog
+  - override hydra/hydra_logging: colorlog

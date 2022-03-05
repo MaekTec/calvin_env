@@ -22,7 +22,7 @@ class GripperCamera(Camera):
 
         self.name = name
 
-    def render(self):
+    def render(self, scale_factor=1, process_segmentation_mask=False):
         camera_ls = p.getLinkState(
             bodyUniqueId=self.robot_uid, linkIndex=self.gripper_cam_link, physicsClientId=self.cid
         )
@@ -36,11 +36,15 @@ class GripperCamera(Camera):
             fov=self.fov, aspect=self.aspect, nearVal=self.nearval, farVal=self.farval
         )
         image = p.getCameraImage(
-            width=self.width,
-            height=self.height,
+            width=self.width * scale_factor,
+            height=self.height * scale_factor,
             viewMatrix=self.view_matrix,
             projectionMatrix=self.projection_matrix,
             physicsClientId=self.cid,
         )
-        rgb_img, depth_img = self.process_rgbd(image, self.nearval, self.farval)
-        return rgb_img, depth_img
+        if process_segmentation_mask:
+            rgb_img, depth_img, segmentation_mask = self.process_rgbd(image, self.nearval, self.farval, process_segmentation_mask=True)
+            return rgb_img, depth_img, segmentation_mask
+        else:
+            rgb_img, depth_img = self.process_rgbd(image, self.nearval, self.farval, process_segmentation_mask=False)
+            return rgb_img, depth_img
